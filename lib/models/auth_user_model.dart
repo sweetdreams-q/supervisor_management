@@ -5,17 +5,20 @@ class AuthUserModel extends Equatable {
     required this.email,
     required this.password,
     required this.name,
+    required this.staffId,
   });
 
   final String email;
   final String password;
   final String name;
+  final String staffId;
 
   factory AuthUserModel.fromJson(Map<String, dynamic> json) {
     return AuthUserModel(
       email: json['email']?.toString() ?? '',
       password: json['password']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
+      staffId: json['staffId']?.toString() ?? '',
     );
   }
 
@@ -24,6 +27,7 @@ class AuthUserModel extends Equatable {
       'email': email,
       'password': password,
       'name': name,
+      'staffId': staffId,
     };
   }
 
@@ -31,14 +35,16 @@ class AuthUserModel extends Equatable {
     String? email,
     String? password,
     String? name,
+    String? staffId,
   }) {
     return AuthUserModel(
       email: email ?? this.email,
       password: password ?? this.password,
       name: name ?? this.name,
+      staffId: staffId ?? this.staffId,
     );
   }
 
   @override
-  List<Object?> get props => [email, password, name];
+  List<Object?> get props => [email, password, name, staffId];
 }

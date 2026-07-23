@@ -3,12 +3,14 @@
     {
       "email": "staff@example.com",
       "password": "staff123",
-      "name": "Staff User"
+      "name": "Staff User",
+      "staffId": "1"
     },
     {
       "email": "admin@example.com",
       "password": "admin123",
-      "name": "Admin User"
+      "name": "Admin User",
+      "staffId": "2"
     }
   ]
 }
