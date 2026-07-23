@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../screens/browse_staff_screen.dart';
 import '../screens/add_project_idea_screen.dart';
 import '../screens/edit_interest_screen.dart';
+import '../screens/edit_project_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/not_found_screen.dart';
@@ -53,6 +54,14 @@ final GoRouter appRouter = GoRouter(
       name: 'add-project-idea',
       builder: (BuildContext context, GoRouterState state) =>
           const AddProjectIdeaScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.editProject,
+      name: 'edit-project',
+      builder: (BuildContext context, GoRouterState state) {
+        final projectId = state.pathParameters['id'] ?? '';
+        return EditProjectScreen(projectId: projectId);
+      },
     ),
     GoRoute(
       path: AppRoutes.login,

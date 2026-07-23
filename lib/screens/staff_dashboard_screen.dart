@@ -146,7 +146,10 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 items: projectProvider.projects,
                 itemBuilder: (context, item) => _ProjectRecordCard(
                   item: item,
-                  onEdit: () => _showProjectDialog(context, staffId, project: item),
+                  onEdit: () => context.pushNamed(
+                    'edit-project',
+                    pathParameters: {'id': item.id},
+                  ),
                   onDelete: () => _confirmDelete(context, 'Delete this project idea?', () => projectProvider.deleteProject(item.id)),
                 ),
               );
@@ -356,83 +359,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
     BuildContext context,
     String staffId, {
     ProjectIdeaModel? project,
-  }) async {
-    final titleController = TextEditingController(text: project?.title ?? '');
-    final descriptionController = TextEditingController(text: project?.description ?? '');
-    final tagsController = TextEditingController(text: project?.tags ?? '');
-    final formKey = GlobalKey<FormState>();
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(project == null ? 'Add Project Idea' : 'Edit Project Idea'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Title is required.' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  maxLines: 3,
-                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Description is required.' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: tagsController,
-                  decoration: const InputDecoration(labelText: 'Tags'),
-                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Tags are required.' : null,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                if (!(formKey.currentState?.validate() ?? false)) {
-                  return;
-                }
-
-                final provider = context.read<ProjectProvider>();
-                if (project == null) {
-                  await provider.addProject(
-                    staffId: staffId,
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    tags: tagsController.text,
-                  );
-                } else {
-                  await provider.updateProject(
-                    id: project.id,
-                    staffId: staffId,
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    tags: tagsController.text,
-                  );
-                }
-
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  }) async {}
 }
 
 class _ManagementSection<T> extends StatelessWidget {
@@ -584,5 +511,4 @@ class _ProjectRecordCard extends StatelessWidget {
       ),
     );
   }
-}
 }

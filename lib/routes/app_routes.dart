@@ -6,5 +6,6 @@ class AppRoutes {
   static const String login = '/login';
   static const String editInterest = '/staff/interest/edit/:id';
   static const String addProjectIdea = '/staff/project/add';
+  static const String editProject = '/staff/project/edit/:id';
   static const String notFound = '/404';
 }
