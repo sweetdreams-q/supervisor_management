@@ -27,7 +27,20 @@ const normalizeProject = (project) => ({
   tags: project.tags ?? '',
 });
 
-const getStudentStaffView = async (_req, res) => {
+const matchesInterestQuery = (interest, query) => {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  const title = String(interest.title ?? '').toLowerCase();
+  const description = String(interest.description ?? '').toLowerCase();
+
+  return title.includes(normalizedQuery) || description.includes(normalizedQuery);
+};
+
+const getStudentStaffView = async (req, res) => {
   try {
     const [staff, interests, projects] = await Promise.all([
       readCSV(staffFileName),
@@ -35,19 +48,31 @@ const getStudentStaffView = async (_req, res) => {
       readCSV(projectsFileName),
     ]);
 
-    const mergedData = staff.map((member) => {
-      const staffId = String(member.id);
+    const interestQuery = String(req.query.interest ?? '').trim();
 
-      return {
-        staffProfile: normalizeStaff(member),
-        areasOfInterest: interests
+    const mergedData = staff
+      .map((member) => {
+        const staffId = String(member.id);
+        const staffInterests = interests
           .filter((interest) => String(interest.staffId) === staffId)
-          .map(normalizeInterest),
-        projectIdeas: projects
-          .filter((project) => String(project.staffId) === staffId)
-          .map(normalizeProject),
-      };
-    });
+          .map(normalizeInterest);
+        const matchingInterests = staffInterests.filter((interest) => matchesInterestQuery(interest, interestQuery));
+
+        return {
+          staffProfile: normalizeStaff(member),
+          areasOfInterest: matchingInterests,
+          projectIdeas: projects
+            .filter((project) => String(project.staffId) === staffId)
+            .map(normalizeProject),
+        };
+      })
+      .filter((entry) => {
+        if (!interestQuery) {
+          return true;
+        }
+
+        return entry.areasOfInterest.length > 0;
+      });
 
     return res.json({ success: true, data: mergedData });
   } catch (error) {
