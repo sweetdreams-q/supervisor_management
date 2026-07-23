@@ -26,7 +26,7 @@ class _HoverCardState extends State<HoverCard> {
     final card = AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOut,
-      transform: Matrix4.identity()..translate(0.0, _isHovered && kIsWeb ? -4.0 : 0.0),
+      transform: Matrix4.identity()..setTranslationRaw(0.0, _isHovered && kIsWeb ? -4.0 : 0.0, 0.0),
       child: Card(
         elevation: _isHovered && kIsWeb ? widget.elevation + 4 : widget.elevation,
         color: widget.color ?? colorScheme.surfaceContainerLow,

@@ -105,34 +105,33 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
 
               final profileBanner = HoverCard(
                 child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 28,
-                        child: Text(
-                          authProvider.currentUser?.name.isNotEmpty == true
-                              ? authProvider.currentUser!.name.substring(0, 1).toUpperCase()
-                              : 'S',
-                        ),
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      child: Text(
+                        authProvider.currentUser?.name.isNotEmpty == true
+                            ? authProvider.currentUser!.name.substring(0, 1).toUpperCase()
+                            : 'S',
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome, ${authProvider.currentUser?.name ?? 'Staff'}',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              staff?.department ?? 'Managing your research interests and project ideas',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome, ${authProvider.currentUser?.name ?? 'Staff'}',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            staff?.department ?? 'Managing your research interests and project ideas',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
 
@@ -405,32 +404,32 @@ class _ManagementSection<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return HoverCard(
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 16),
+          if (items.isEmpty)
+            AppEmptyView(
+              title: title,
+              message: emptyMessage,
+              icon: Icons.inbox_outlined,
+            )
+          else
+            Column(
+              children: items
+                  .map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: itemBuilder(context, item),
+                    ),
+                  )
+                  .toList(),
             ),
-            const SizedBox(height: 16),
-            if (items.isEmpty)
-              AppEmptyView(
-                title: title,
-                message: emptyMessage,
-                icon: Icons.inbox_outlined,
-              )
-            else
-              Column(
-                children: items
-                    .map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: itemBuilder(context, item),
-                      ),
-                    )
-                    .toList(),
-              ),
-          ],
-        ),
+        ],
+      ),
     );
   }
 }
@@ -450,29 +449,29 @@ class _InterestRecordCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return HoverCard(
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text(item.description),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                OutlinedButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_outlined),
-                  label: const Text('Edit'),
-                ),
-                const SizedBox(width: 12),
-                TextButton.icon(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline),
-                  label: const Text('Delete'),
-                ),
-              ],
-            ),
-          ],
-        ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          Text(item.description),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              OutlinedButton.icon(
+                onPressed: onEdit,
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Edit'),
+              ),
+              const SizedBox(width: 12),
+              TextButton.icon(
+                onPressed: onDelete,
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Delete'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -498,37 +497,37 @@ class _ProjectRecordCard extends StatelessWidget {
 
     return HoverCard(
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text(item.description),
-            if (tags.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: tags.map((tag) => Chip(label: Text(tag))).toList(),
-              ),
-            ],
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          Text(item.description),
+          if (tags.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Row(
-              children: [
-                OutlinedButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_outlined),
-                  label: const Text('Edit'),
-                ),
-                const SizedBox(width: 12),
-                TextButton.icon(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline),
-                  label: const Text('Delete'),
-                ),
-              ],
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: tags.map((tag) => Chip(label: Text(tag))).toList(),
             ),
           ],
-        ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              OutlinedButton.icon(
+                onPressed: onEdit,
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Edit'),
+              ),
+              const SizedBox(width: 12),
+              TextButton.icon(
+                onPressed: onDelete,
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Delete'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

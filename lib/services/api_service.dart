@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' show ClientException;
 
 import '../constants/api_constants.dart';
 import '../models/interest_model.dart';

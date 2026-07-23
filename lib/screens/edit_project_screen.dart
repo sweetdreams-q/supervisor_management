@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../models/project_idea_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/project_provider.dart';
-import '../routes/app_routes.dart';
 
 class EditProjectScreen extends StatefulWidget {
   const EditProjectScreen({super.key, required this.projectId});

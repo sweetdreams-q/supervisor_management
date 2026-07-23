@@ -1,1 +1,4 @@
 id,staffId,title,description,tags
+3001,1001,Student Research Dashboard,"A web dashboard for tracking student research progress and milestones","Flutter,Analytics,Dashboard"
+3002,1002,Department Workflow Hub,"A workflow tool for managing approvals, tasks, and faculty requests","Web,Cloud,Automation"
+3003,1003,Smart Energy Monitor,"A prototype for monitoring energy consumption in lab equipment","IoT,Hardware,Energy"

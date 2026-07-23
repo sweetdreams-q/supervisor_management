@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../models/staff_browse_model.dart';
 import '../providers/staff_provider.dart';
-import '../routes/app_routes.dart';
 import '../widgets/app_empty_view.dart';
 import '../widgets/app_error_view.dart';
 import '../widgets/app_loading_view.dart';
@@ -214,7 +214,7 @@ class _InterestDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: provider.selectedInterest,
+      initialValue: provider.selectedInterest,
       decoration: const InputDecoration(
         labelText: 'Interest filter',
         border: OutlineInputBorder(),
@@ -245,66 +245,59 @@ class _StaffCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
-      elevation: 0,
+    return HoverCard(
       color: colorScheme.surfaceContainerLow,
-      child: HoverCard(
-        color: colorScheme.surfaceContainerLow,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              item.staffProfile.name,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.staffProfile.department,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Research interests',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: item.areasOfInterest.isEmpty
-                  ? [
-                      Chip(
-                        label: Text(
-                          'No interests listed',
-                          style: TextStyle(color: colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                    ]
-                  : item.areasOfInterest
-                      .map((interest) => Chip(label: Text(interest.title)))
-                      .toList(),
-            ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () => context.goNamed(
-                  'staff-details',
-                  pathParameters: {'id': item.staffProfile.id},
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            item.staffProfile.name,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
-                child: const Text('View Profile'),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            item.staffProfile.department,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Research interests',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: item.areasOfInterest.isEmpty
+                ? [
+                    Chip(
+                      label: Text(
+                        'No interests listed',
+                        style: TextStyle(color: colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                  ]
+                : item.areasOfInterest.map((interest) => Chip(label: Text(interest.title))).toList(),
+          ),
+          const Spacer(),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () => context.goNamed(
+                'staff-details',
+                pathParameters: {'id': item.staffProfile.id},
               ),
+              child: const Text('View Profile'),
             ),
-          ],
-        ),
-      ),
+          ),
+        ],
       ),
     );
   }

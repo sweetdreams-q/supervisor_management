@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../models/interest_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/interest_provider.dart';
-import '../routes/app_routes.dart';
 
 class EditInterestScreen extends StatefulWidget {
   const EditInterestScreen({super.key, required this.interestId});
