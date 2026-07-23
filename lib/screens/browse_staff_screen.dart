@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/staff_browse_model.dart';
 import '../providers/staff_provider.dart';
+import '../routes/app_routes.dart';
 import '../widgets/app_empty_view.dart';
 import '../widgets/app_error_view.dart';
 import '../widgets/app_loading_view.dart';
@@ -37,6 +38,16 @@ class _BrowseStaffScreenState extends State<BrowseStaffScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+              return;
+            }
+            context.go(AppRoutes.home);
+          },
+        ),
         title: const Text('Browse Staff'),
       ),
       body: Consumer<StaffProvider>(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/interest_model.dart';
@@ -6,6 +7,7 @@ import '../models/project_idea_model.dart';
 import '../providers/interest_provider.dart';
 import '../providers/project_provider.dart';
 import '../providers/staff_provider.dart';
+import '../routes/app_routes.dart';
 
 class StaffDetailsScreen extends StatefulWidget {
   const StaffDetailsScreen({super.key, required this.staffId});
@@ -41,6 +43,16 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+              return;
+            }
+            context.go(AppRoutes.browseStaff);
+          },
+        ),
         title: const Text('Staff Profile'),
       ),
       body: Consumer3<StaffProvider, InterestProvider, ProjectProvider>(
