@@ -3,6 +3,9 @@ class ApiConstants {
 
   static String staffList = '/staff';
   static String staffById(String id) => '/staff/$id';
+  static String addStaff = '/staff';
+  static String updateStaff(String id) => '/staff/$id';
+  static String deleteStaff(String id) => '/staff/$id';
   static String staffInterests(String staffId) => '/staff/$staffId/interests';
   static String staffProjects(String staffId) => '/staff/$staffId/projects';
 

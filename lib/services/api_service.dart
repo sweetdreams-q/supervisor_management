@@ -38,6 +38,56 @@ class ApiService {
     return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
   }
 
+  Future<StaffModel> addStaff({
+    required String name,
+    required String email,
+    required String department,
+    required String bio,
+  }) async {
+    final response = await _client.post(
+      _uri(ApiConstants.addStaff),
+      headers: _jsonHeaders,
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'department': department,
+        'bio': bio,
+      }),
+    );
+    _validateResponse(response, expectedStatusCodes: {201});
+
+    final payload = jsonDecode(response.body) as Map<String, dynamic>;
+    return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+  }
+
+  Future<StaffModel> updateStaff({
+    required String id,
+    required String name,
+    required String email,
+    required String department,
+    required String bio,
+  }) async {
+    final response = await _client.put(
+      _uri(ApiConstants.updateStaff(id)),
+      headers: _jsonHeaders,
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'department': department,
+        'bio': bio,
+      }),
+    );
+    _validateResponse(response);
+
+    final payload = jsonDecode(response.body) as Map<String, dynamic>;
+    return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+  }
+
+  Future<void> deleteStaff(String id) async {
+    final response = await _client.delete(_uri(ApiConstants.deleteStaff(id)));
+    _validateResponse(response);
+  }
+
   Future<List<InterestModel>> getInterests(String staffId, {String? interest}) async {
     final response = await _client.get(
       _uri(
