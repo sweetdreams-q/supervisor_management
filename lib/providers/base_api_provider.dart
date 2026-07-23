@@ -35,4 +35,19 @@ abstract class BaseApiProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  Future<bool> runGuardedVoid(Future<void> Function() action) async {
+    _setLoading(true);
+    clearError();
+
+    try {
+      await action();
+      return true;
+    } catch (error) {
+      _setError(error.toString());
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
 }

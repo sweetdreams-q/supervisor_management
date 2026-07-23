@@ -1,4 +1,5 @@
 import '../models/staff_model.dart';
+import '../models/staff_browse_model.dart';
 import '../services/api_service.dart';
 import 'base_api_provider.dart';
 
@@ -9,9 +10,11 @@ class StaffProvider extends BaseApiProvider {
 
   List<StaffModel> _staff = const [];
   StaffModel? _selectedStaff;
+  List<StaffBrowseModel> _browseStaff = const [];
 
   List<StaffModel> get staff => _staff;
   StaffModel? get selectedStaff => _selectedStaff;
+  List<StaffBrowseModel> get browseStaff => _browseStaff;
 
   Future<void> loadData() async {
     await runGuarded(() async {
@@ -23,6 +26,13 @@ class StaffProvider extends BaseApiProvider {
   Future<void> loadStaffById(String id) async {
     await runGuarded(() async {
       _selectedStaff = await _apiService.getStaffById(id);
+      notifyListeners();
+    });
+  }
+
+  Future<void> loadBrowseData({String? interest}) async {
+    await runGuarded(() async {
+      _browseStaff = await _apiService.getBrowseStaff(interest: interest);
       notifyListeners();
     });
   }
@@ -75,9 +85,9 @@ class StaffProvider extends BaseApiProvider {
   }
 
   Future<void> deleteStaff(String id) async {
-    final deleted = await runGuarded(() => _apiService.deleteStaff(id));
+    final deleted = await runGuardedVoid(() => _apiService.deleteStaff(id));
 
-    if (deleted != null) {
+    if (deleted) {
       _staff = _staff.where((member) => member.id != id).toList();
       if (_selectedStaff?.id == id) {
         _selectedStaff = null;

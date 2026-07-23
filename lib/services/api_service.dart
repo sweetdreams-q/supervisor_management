@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import '../constants/api_constants.dart';
 import '../models/interest_model.dart';
+import '../models/staff_browse_model.dart';
 import '../models/project_idea_model.dart';
 import '../models/staff_model.dart';
 
@@ -36,6 +37,20 @@ class ApiService {
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+  }
+
+  Future<List<StaffBrowseModel>> getBrowseStaff({String? interest}) async {
+    final response = await _client.get(
+      _uri(
+        ApiConstants.studentsStaff,
+        interest == null || interest.trim().isEmpty ? null : {'interest': interest},
+      ),
+    );
+    _validateResponse(response);
+
+    final payload = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = (payload['data'] as List<dynamic>? ?? const []);
+    return data.map((item) => StaffBrowseModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
 
   Future<StaffModel> addStaff({

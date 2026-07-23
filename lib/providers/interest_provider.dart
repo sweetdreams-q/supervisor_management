@@ -64,9 +64,9 @@ class InterestProvider extends BaseApiProvider {
   }
 
   Future<void> deleteInterest(String id) async {
-    final deleted = await runGuarded(() => _apiService.deleteInterest(id));
+    final deleted = await runGuardedVoid(() => _apiService.deleteInterest(id));
 
-    if (deleted != null) {
+    if (deleted) {
       _interests = _interests.where((interest) => interest.id != id).toList();
       notifyListeners();
     }

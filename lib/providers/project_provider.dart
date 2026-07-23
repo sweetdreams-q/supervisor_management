@@ -68,9 +68,9 @@ class ProjectProvider extends BaseApiProvider {
   }
 
   Future<void> deleteProject(String id) async {
-    final deleted = await runGuarded(() => _apiService.deleteProject(id));
+    final deleted = await runGuardedVoid(() => _apiService.deleteProject(id));
 
-    if (deleted != null) {
+    if (deleted) {
       _projects = _projects.where((project) => project.id != id).toList();
       notifyListeners();
     }
