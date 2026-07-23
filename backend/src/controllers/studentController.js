@@ -1,4 +1,5 @@
 const { readCSV } = require('../utils/csvHelper');
+const { sendError } = require('../utils/errorHelpers');
 
 const staffFileName = 'staff.csv';
 const interestsFileName = 'interests.csv';
@@ -76,7 +77,7 @@ const getStudentStaffView = async (req, res) => {
 
     return res.json({ success: true, data: mergedData });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch student staff data.' });
+    return sendError(res, 500, error.userMessage || 'Failed to fetch student staff data.', error, 'studentController.getStudentStaffView');
   }
 };
 

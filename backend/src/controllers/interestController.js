@@ -1,4 +1,5 @@
 const { readCSV, writeCSV } = require('../utils/csvHelper');
+const { sendError } = require('../utils/errorHelpers');
 
 const staffFileName = 'staff.csv';
 const interestsFileName = 'interests.csv';
@@ -31,7 +32,7 @@ const getInterestsByStaffId = async (req, res) => {
 
     return res.json({ success: true, data: staffInterests });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch staff interests.' });
+    return sendError(res, 500, error.userMessage || 'Failed to fetch staff interests.', error, 'interestController.getInterestsByStaffId');
   }
 };
 
@@ -65,7 +66,7 @@ const createInterest = async (req, res) => {
 
     return res.status(201).json({ success: true, message: 'Interest created.', data: newInterest });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to create interest.' });
+    return sendError(res, 500, error.userMessage || 'Failed to create interest.', error, 'interestController.createInterest');
   }
 };
 
@@ -109,7 +110,7 @@ const updateInterest = async (req, res) => {
 
     return res.json({ success: true, message: 'Interest updated.', data: updatedInterest });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to update interest.' });
+    return sendError(res, 500, error.userMessage || 'Failed to update interest.', error, 'interestController.updateInterest');
   }
 };
 
@@ -126,7 +127,7 @@ const deleteInterest = async (req, res) => {
 
     return res.json({ success: true, message: 'Interest deleted.' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to delete interest.' });
+    return sendError(res, 500, error.userMessage || 'Failed to delete interest.', error, 'interestController.deleteInterest');
   }
 };
 

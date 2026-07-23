@@ -54,9 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Staff Login'),
-      ),
+      appBar: AppBar(title: const Text('Staff Login')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -69,74 +67,75 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Consumer<AuthProvider>(
                 builder: (context, authProvider, _) {
                   return Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'Staff Access',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                            textAlign: TextAlign.center,
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Staff Access',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Students can browse without logging in. This form is for staff accounts only.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            labelText: 'Staff email',
+                            border: OutlineInputBorder(),
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Students can browse without logging in. This form is for staff accounts only.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Email is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            border: OutlineInputBorder(),
                           ),
-                          const SizedBox(height: 24),
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              labelText: 'Staff email',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Email is required.';
-                              }
-                              return null;
-                            },
-                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Password is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                        if (authProvider.errorMessage != null) ...[
                           const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Password is required.';
-                              }
-                              return null;
-                            },
-                          ),
-                          if (authProvider.errorMessage != null) ...[
-                            const SizedBox(height: 16),
-                            Text(
-                              authProvider.errorMessage!,
-                              style: TextStyle(color: colorScheme.error),
-                            ),
-                          ],
-                          const SizedBox(height: 24),
-                          FilledButton(
-                            onPressed: authProvider.isLoading ? null : _submit,
-                            child: authProvider.isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : const Text('Login'),
+                          Text(
+                            authProvider.errorMessage!,
+                            style: TextStyle(color: colorScheme.error),
                           ),
                         ],
-                      ),
+                        const SizedBox(height: 24),
+                        FilledButton(
+                          onPressed: authProvider.isLoading ? null : _submit,
+                          child: authProvider.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Login'),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

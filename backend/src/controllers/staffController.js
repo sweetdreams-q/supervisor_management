@@ -1,4 +1,5 @@
 const { readCSV, writeCSV } = require('../utils/csvHelper');
+const { sendError } = require('../utils/errorHelpers');
 
 const staffFileName = 'staff.csv';
 const staffHeaders = ['id', 'name', 'email', 'department', 'bio'];
@@ -16,7 +17,7 @@ const getAllStaff = async (_req, res) => {
     const staff = await readCSV(staffFileName);
     return res.json({ success: true, data: staff.map(normalizeStaff) });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch staff records.' });
+    return sendError(res, 500, error.userMessage || 'Failed to fetch staff records.', error, 'staffController.getAllStaff');
   }
 };
 
@@ -31,7 +32,7 @@ const getStaffById = async (req, res) => {
 
     return res.json({ success: true, data: normalizeStaff(foundStaff) });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch staff member.' });
+    return sendError(res, 500, error.userMessage || 'Failed to fetch staff member.', error, 'staffController.getStaffById');
   }
 };
 
@@ -60,7 +61,7 @@ const createStaff = async (req, res) => {
 
     return res.status(201).json({ success: true, message: 'Staff member created.', data: newStaff });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to create staff member.' });
+    return sendError(res, 500, error.userMessage || 'Failed to create staff member.', error, 'staffController.createStaff');
   }
 };
 
@@ -95,7 +96,7 @@ const updateStaff = async (req, res) => {
 
     return res.json({ success: true, message: 'Staff member updated.', data: updatedStaff });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to update staff member.' });
+    return sendError(res, 500, error.userMessage || 'Failed to update staff member.', error, 'staffController.updateStaff');
   }
 };
 
@@ -112,7 +113,7 @@ const deleteStaff = async (req, res) => {
 
     return res.json({ success: true, message: 'Staff member deleted.' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to delete staff member.' });
+    return sendError(res, 500, error.userMessage || 'Failed to delete staff member.', error, 'staffController.deleteStaff');
   }
 };
 

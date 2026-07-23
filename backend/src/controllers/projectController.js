@@ -1,4 +1,5 @@
 const { readCSV, writeCSV } = require('../utils/csvHelper');
+const { sendError } = require('../utils/errorHelpers');
 
 const staffFileName = 'staff.csv';
 const projectsFileName = 'projects.csv';
@@ -32,7 +33,7 @@ const getProjectsByStaffId = async (req, res) => {
 
     return res.json({ success: true, data: staffProjects });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch staff projects.' });
+    return sendError(res, 500, error.userMessage || 'Failed to fetch staff projects.', error, 'projectController.getProjectsByStaffId');
   }
 };
 
@@ -67,7 +68,7 @@ const createProject = async (req, res) => {
 
     return res.status(201).json({ success: true, message: 'Project created.', data: newProject });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to create project.' });
+    return sendError(res, 500, error.userMessage || 'Failed to create project.', error, 'projectController.createProject');
   }
 };
 
@@ -113,7 +114,7 @@ const updateProject = async (req, res) => {
 
     return res.json({ success: true, message: 'Project updated.', data: updatedProject });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to update project.' });
+    return sendError(res, 500, error.userMessage || 'Failed to update project.', error, 'projectController.updateProject');
   }
 };
 
@@ -130,7 +131,7 @@ const deleteProject = async (req, res) => {
 
     return res.json({ success: true, message: 'Project deleted.' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to delete project.' });
+    return sendError(res, 500, error.userMessage || 'Failed to delete project.', error, 'projectController.deleteProject');
   }
 };
 

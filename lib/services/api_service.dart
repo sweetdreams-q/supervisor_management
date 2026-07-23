@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -10,47 +13,71 @@ import '../models/staff_model.dart';
 
 class ApiService {
   ApiService({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = (baseUrl ?? ApiConstants.baseUrl).trim();
+    : _client = client ?? http.Client(),
+      _baseUrl = (baseUrl ?? ApiConstants.baseUrl).trim();
 
   final http.Client _client;
   final String _baseUrl;
+  static const Duration _requestTimeout = Duration(seconds: 12);
 
   Uri _uri(String path, [Map<String, dynamic>? queryParameters]) {
-    final normalizedBaseUrl = _baseUrl.endsWith('/') ? _baseUrl.substring(0, _baseUrl.length - 1) : _baseUrl;
+    final normalizedBaseUrl = _baseUrl.endsWith('/')
+        ? _baseUrl.substring(0, _baseUrl.length - 1)
+        : _baseUrl;
     final normalizedPath = path.startsWith('/') ? path : '/$path';
-    return Uri.parse('$normalizedBaseUrl$normalizedPath').replace(queryParameters: queryParameters);
+    return Uri.parse(
+      '$normalizedBaseUrl$normalizedPath',
+    ).replace(queryParameters: queryParameters);
   }
 
   Future<List<StaffModel>> getStaff() async {
-    final response = await _client.get(_uri(ApiConstants.staffList));
+    final response = await _send(
+      () => _client.get(_uri(ApiConstants.staffList)),
+    );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     final data = (payload['data'] as List<dynamic>? ?? const []);
-    return data.map((item) => StaffModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+    return data
+        .map(
+          (item) => StaffModel.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
+        .toList();
   }
 
   Future<StaffModel> getStaffById(String id) async {
-    final response = await _client.get(_uri(ApiConstants.staffById(id)));
+    final response = await _send(
+      () => _client.get(_uri(ApiConstants.staffById(id))),
+    );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return StaffModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<List<StaffBrowseModel>> getBrowseStaff({String? interest}) async {
-    final response = await _client.get(
-      _uri(
-        ApiConstants.studentsStaff,
-        interest == null || interest.trim().isEmpty ? null : {'interest': interest},
+    final response = await _send(
+      () => _client.get(
+        _uri(
+          ApiConstants.studentsStaff,
+          interest == null || interest.trim().isEmpty
+              ? null
+              : {'interest': interest},
+        ),
       ),
     );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     final data = (payload['data'] as List<dynamic>? ?? const []);
-    return data.map((item) => StaffBrowseModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+    return data
+        .map(
+          (item) =>
+              StaffBrowseModel.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
+        .toList();
   }
 
   Future<StaffModel> addStaff({
@@ -59,20 +86,24 @@ class ApiService {
     required String department,
     required String bio,
   }) async {
-    final response = await _client.post(
-      _uri(ApiConstants.addStaff),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'department': department,
-        'bio': bio,
-      }),
+    final response = await _send(
+      () => _client.post(
+        _uri(ApiConstants.addStaff),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'department': department,
+          'bio': bio,
+        }),
+      ),
     );
     _validateResponse(response, expectedStatusCodes: {201});
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return StaffModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<StaffModel> updateStaff({
@@ -82,48 +113,73 @@ class ApiService {
     required String department,
     required String bio,
   }) async {
-    final response = await _client.put(
-      _uri(ApiConstants.updateStaff(id)),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'department': department,
-        'bio': bio,
-      }),
+    final response = await _send(
+      () => _client.put(
+        _uri(ApiConstants.updateStaff(id)),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'department': department,
+          'bio': bio,
+        }),
+      ),
     );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return StaffModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return StaffModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<void> deleteStaff(String id) async {
-    final response = await _client.delete(_uri(ApiConstants.deleteStaff(id)));
+    final response = await _send(
+      () => _client.delete(_uri(ApiConstants.deleteStaff(id))),
+    );
     _validateResponse(response);
   }
 
-  Future<List<InterestModel>> getInterests(String staffId, {String? interest}) async {
-    final response = await _client.get(
-      _uri(
-        ApiConstants.staffInterests(staffId),
-        interest == null || interest.trim().isEmpty ? null : {'interest': interest},
+  Future<List<InterestModel>> getInterests(
+    String staffId, {
+    String? interest,
+  }) async {
+    final response = await _send(
+      () => _client.get(
+        _uri(
+          ApiConstants.staffInterests(staffId),
+          interest == null || interest.trim().isEmpty
+              ? null
+              : {'interest': interest},
+        ),
       ),
     );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     final data = (payload['data'] as List<dynamic>? ?? const []);
-    return data.map((item) => InterestModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+    return data
+        .map(
+          (item) =>
+              InterestModel.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
+        .toList();
   }
 
   Future<List<ProjectIdeaModel>> getProjects(String staffId) async {
-    final response = await _client.get(_uri(ApiConstants.staffProjects(staffId)));
+    final response = await _send(
+      () => _client.get(_uri(ApiConstants.staffProjects(staffId))),
+    );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     final data = (payload['data'] as List<dynamic>? ?? const []);
-    return data.map((item) => ProjectIdeaModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+    return data
+        .map(
+          (item) =>
+              ProjectIdeaModel.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
+        .toList();
   }
 
   Future<InterestModel> addInterest({
@@ -131,19 +187,23 @@ class ApiService {
     required String title,
     required String description,
   }) async {
-    final response = await _client.post(
-      _uri(ApiConstants.addInterest),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'staffId': staffId,
-        'title': title,
-        'description': description,
-      }),
+    final response = await _send(
+      () => _client.post(
+        _uri(ApiConstants.addInterest),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'staffId': staffId,
+          'title': title,
+          'description': description,
+        }),
+      ),
     );
     _validateResponse(response, expectedStatusCodes: {201});
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return InterestModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return InterestModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<InterestModel> updateInterest({
@@ -152,23 +212,29 @@ class ApiService {
     required String title,
     required String description,
   }) async {
-    final response = await _client.put(
-      _uri(ApiConstants.updateInterest(id)),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'staffId': staffId,
-        'title': title,
-        'description': description,
-      }),
+    final response = await _send(
+      () => _client.put(
+        _uri(ApiConstants.updateInterest(id)),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'staffId': staffId,
+          'title': title,
+          'description': description,
+        }),
+      ),
     );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return InterestModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return InterestModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<void> deleteInterest(String id) async {
-    final response = await _client.delete(_uri(ApiConstants.deleteInterest(id)));
+    final response = await _send(
+      () => _client.delete(_uri(ApiConstants.deleteInterest(id))),
+    );
     _validateResponse(response);
   }
 
@@ -178,20 +244,24 @@ class ApiService {
     required String description,
     required String tags,
   }) async {
-    final response = await _client.post(
-      _uri(ApiConstants.addProject),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'staffId': staffId,
-        'title': title,
-        'description': description,
-        'tags': tags,
-      }),
+    final response = await _send(
+      () => _client.post(
+        _uri(ApiConstants.addProject),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'staffId': staffId,
+          'title': title,
+          'description': description,
+          'tags': tags,
+        }),
+      ),
     );
     _validateResponse(response, expectedStatusCodes: {201});
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return ProjectIdeaModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return ProjectIdeaModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<ProjectIdeaModel> updateProject({
@@ -201,36 +271,113 @@ class ApiService {
     required String description,
     required String tags,
   }) async {
-    final response = await _client.put(
-      _uri(ApiConstants.updateProject(id)),
-      headers: _jsonHeaders,
-      body: jsonEncode({
-        'staffId': staffId,
-        'title': title,
-        'description': description,
-        'tags': tags,
-      }),
+    final response = await _send(
+      () => _client.put(
+        _uri(ApiConstants.updateProject(id)),
+        headers: _jsonHeaders,
+        body: jsonEncode({
+          'staffId': staffId,
+          'title': title,
+          'description': description,
+          'tags': tags,
+        }),
+      ),
     );
     _validateResponse(response);
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
-    return ProjectIdeaModel.fromJson(Map<String, dynamic>.from(payload['data'] as Map));
+    return ProjectIdeaModel.fromJson(
+      Map<String, dynamic>.from(payload['data'] as Map),
+    );
   }
 
   Future<void> deleteProject(String id) async {
-    final response = await _client.delete(_uri(ApiConstants.deleteProject(id)));
+    final response = await _send(
+      () => _client.delete(_uri(ApiConstants.deleteProject(id))),
+    );
     _validateResponse(response);
   }
 
-  void _validateResponse(http.Response response, {Set<int> expectedStatusCodes = const {200}}) {
+  Future<http.Response> _send(Future<http.Response> Function() request) async {
+    try {
+      return await request().timeout(_requestTimeout);
+    } on SocketException catch (error, stackTrace) {
+      developer.log(
+        'Network request failed',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'ApiService',
+      );
+      throw const ApiException.network(
+        'Server unavailable. Check your connection and try again.',
+      );
+    } on TimeoutException catch (error, stackTrace) {
+      developer.log(
+        'Request timed out',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'ApiService',
+      );
+      throw const ApiException.network(
+        'The request timed out. Please try again.',
+      );
+    } on ClientException catch (error, stackTrace) {
+      developer.log(
+        'HTTP client error',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'ApiService',
+      );
+      throw const ApiException.network(
+        'Server unavailable. Check your connection and try again.',
+      );
+    } catch (error, stackTrace) {
+      developer.log(
+        'Unexpected request failure',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'ApiService',
+      );
+      rethrow;
+    }
+  }
+
+  void _validateResponse(
+    http.Response response, {
+    Set<int> expectedStatusCodes = const {200},
+  }) {
     if (expectedStatusCodes.contains(response.statusCode)) {
       return;
     }
 
     throw ApiException(
       statusCode: response.statusCode,
-      message: _extractMessage(response.body) ?? 'Request failed',
+      message:
+          _extractMessage(response.body) ?? _statusMessage(response.statusCode),
     );
+  }
+
+  String _statusMessage(int statusCode) {
+    switch (statusCode) {
+      case 400:
+        return 'Please check your input and try again.';
+      case 401:
+        return 'You are not authorized to perform this action.';
+      case 403:
+        return 'This action is forbidden.';
+      case 404:
+        return 'The requested item was not found.';
+      case 409:
+        return 'A record with the same details already exists.';
+      case 422:
+        return 'Validation failed. Please review the form fields.';
+      case 500:
+        return 'The server encountered a problem. Please try again later.';
+      case 503:
+        return 'Server unavailable. Please try again later.';
+      default:
+        return 'Request failed with status code $statusCode.';
+    }
   }
 
   String? _extractMessage(String body) {
@@ -247,17 +394,27 @@ class ApiService {
   }
 
   Map<String, String> get _jsonHeaders => const {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Accept': 'application/json',
-      };
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json',
+  };
 }
 
 class ApiException implements Exception {
-  const ApiException({required this.statusCode, required this.message});
+  const ApiException({
+    required this.statusCode,
+    required this.message,
+    this.isNetworkError = false,
+  });
+
+  const ApiException.network(this.message)
+    : statusCode = 503,
+      isNetworkError = true;
 
   final int statusCode;
   final String message;
+  final bool isNetworkError;
 
   @override
-  String toString() => 'ApiException(statusCode: $statusCode, message: $message)';
+  String toString() =>
+      'ApiException(statusCode: $statusCode, message: $message)';
 }

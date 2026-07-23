@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../models/auth_user_model.dart';
 import '../services/auth_service.dart';
+import '../services/error_messages.dart';
 
 class AuthProvider extends ChangeNotifier {
-  AuthProvider({AuthService? authService}) : _authService = authService ?? AuthService();
+  AuthProvider({AuthService? authService})
+    : _authService = authService ?? AuthService();
 
   final AuthService _authService;
 
@@ -32,7 +34,11 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = user;
       return true;
     } catch (error) {
-      _errorMessage = error.toString();
+      logAppError(runtimeType.toString(), error);
+      _errorMessage = userFriendlyMessageForError(
+        error,
+        fallback: 'Unable to log in right now. Please try again.',
+      );
       return false;
     } finally {
       _isLoading = false;

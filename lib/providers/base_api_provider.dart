@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+import '../services/api_service.dart';
+import '../services/error_messages.dart';
+
 abstract class BaseApiProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
@@ -29,7 +32,8 @@ abstract class BaseApiProvider extends ChangeNotifier {
     try {
       return await action();
     } catch (error) {
-      _setError(error.toString());
+      logAppError(runtimeType.toString(), error);
+      _setError(_friendlyErrorMessage(error));
       return null;
     } finally {
       _setLoading(false);
@@ -44,10 +48,19 @@ abstract class BaseApiProvider extends ChangeNotifier {
       await action();
       return true;
     } catch (error) {
-      _setError(error.toString());
+      logAppError(runtimeType.toString(), error);
+      _setError(_friendlyErrorMessage(error));
       return false;
     } finally {
       _setLoading(false);
     }
+  }
+
+  String _friendlyErrorMessage(Object error) {
+    if (error is ApiException) {
+      return error.message;
+    }
+
+    return userFriendlyMessageForError(error);
   }
 }
