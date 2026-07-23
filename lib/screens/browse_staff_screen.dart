@@ -4,6 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../providers/staff_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_empty_view.dart';
+import '../widgets/app_error_view.dart';
+import '../widgets/app_loading_view.dart';
+import '../widgets/hover_card.dart';
 
 class BrowseStaffScreen extends StatefulWidget {
   const BrowseStaffScreen({super.key});
@@ -40,18 +44,13 @@ class _BrowseStaffScreenState extends State<BrowseStaffScreen> {
           final filteredStaff = provider.filteredBrowseStaff;
 
           if (provider.isLoading && provider.browseStaff.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingView(message: 'Loading staff profiles...');
           }
 
           if (provider.errorMessage != null && provider.browseStaff.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  provider.errorMessage!,
-                  textAlign: TextAlign.center,
-                ),
-              ),
+            return AppErrorView(
+              message: provider.errorMessage!,
+              onRetry: provider.loadBrowseData,
             );
           }
 
@@ -87,7 +86,11 @@ class _BrowseStaffScreenState extends State<BrowseStaffScreen> {
                     if (filteredStaff.isEmpty && !provider.isLoading)
                       const SliverFillRemaining(
                         hasScrollBody: false,
-                        child: _NoResultsView(),
+                        child: AppEmptyView(
+                          title: 'No results found',
+                          message: 'Try a different name, department, or research interest.',
+                          icon: Icons.search_off,
+                        ),
                       )
                     else
                       SliverPadding(
@@ -172,7 +175,7 @@ class _BrowseFilters extends StatelessWidget {
                   provider.clearBrowseFilters();
                 },
                 icon: const Icon(Icons.clear),
-                label: const Text('Clear filters'),
+                  label: const Text('Clear filters'),
               ),
             ),
           ],
@@ -233,40 +236,6 @@ class _InterestDropdown extends StatelessWidget {
   }
 }
 
-class _NoResultsView extends StatelessWidget {
-  const _NoResultsView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 72,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No results found',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting your search or interest filter.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _StaffCard extends StatelessWidget {
   const _StaffCard({required this.item});
 
@@ -279,7 +248,8 @@ class _StaffCard extends StatelessWidget {
     return Card(
       elevation: 0,
       color: colorScheme.surfaceContainerLow,
-      child: Padding(
+      child: HoverCard(
+        color: colorScheme.surfaceContainerLow,
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,6 +304,7 @@ class _StaffCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

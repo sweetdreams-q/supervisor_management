@@ -8,6 +8,10 @@ import '../providers/auth_provider.dart';
 import '../providers/interest_provider.dart';
 import '../providers/project_provider.dart';
 import '../providers/staff_provider.dart';
+import '../widgets/app_empty_view.dart';
+import '../widgets/app_error_view.dart';
+import '../widgets/app_loading_view.dart';
+import '../widgets/hover_card.dart';
 
 class StaffDashboardScreen extends StatefulWidget {
   const StaffDashboardScreen({super.key});
@@ -78,23 +82,29 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
           final hasError = staffProvider.errorMessage != null || interestProvider.errorMessage != null || projectProvider.errorMessage != null;
 
           if (loading && staff == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingView(message: 'Loading dashboard...');
           }
 
           if (hasError && staff == null) {
             final message = staffProvider.errorMessage ?? interestProvider.errorMessage ?? projectProvider.errorMessage ?? 'Unable to load dashboard.';
-            return Center(child: Text(message));
+            return AppErrorView(
+              message: message,
+              onRetry: () async {
+                await Future.wait([
+                  context.read<InterestProvider>().loadData(staffId: staffId),
+                  context.read<ProjectProvider>().loadData(staffId: staffId),
+                  context.read<StaffProvider>().loadStaffById(staffId),
+                ]);
+              },
+            );
           }
 
           return LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 900;
 
-              final profileBanner = Card(
-                elevation: 0,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
+              final profileBanner = HoverCard(
+                child: Row(
                     children: [
                       CircleAvatar(
                         radius: 28,
@@ -393,11 +403,8 @@ class _ManagementSection<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+    return HoverCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -406,7 +413,11 @@ class _ManagementSection<T> extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             if (items.isEmpty)
-              Text(emptyMessage)
+              AppEmptyView(
+                title: title,
+                message: emptyMessage,
+                icon: Icons.inbox_outlined,
+              )
             else
               Column(
                 children: items
@@ -420,7 +431,6 @@ class _ManagementSection<T> extends StatelessWidget {
               ),
           ],
         ),
-      ),
     );
   }
 }
@@ -438,10 +448,8 @@ class _InterestRecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    return HoverCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
@@ -465,7 +473,6 @@ class _InterestRecordCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }
@@ -489,10 +496,8 @@ class _ProjectRecordCard extends StatelessWidget {
         .where((tag) => tag.isNotEmpty)
         .toList();
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    return HoverCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(item.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
@@ -524,7 +529,6 @@ class _ProjectRecordCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/hover_card.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -41,6 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success) {
       context.go(AppRoutes.staffDashboard);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.errorMessage ?? 'Login failed.')),
+      );
     }
   }
 
@@ -57,14 +62,13 @@ class _LoginScreenState extends State<LoginScreen> {
           constraints: const BoxConstraints(maxWidth: 520),
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Card(
+            child: HoverCard(
               elevation: 0,
               color: colorScheme.surfaceContainerLow,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Consumer<AuthProvider>(
-                  builder: (context, authProvider, _) {
-                    return Form(
+              padding: const EdgeInsets.all(24),
+              child: Consumer<AuthProvider>(
+                builder: (context, authProvider, _) {
+                  return Form(
                       key: _formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -133,9 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
+                  );
+                },
               ),
             ),
           ),

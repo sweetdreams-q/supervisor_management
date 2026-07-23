@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import '../routes/app_routes.dart';
+import '../widgets/hover_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -45,16 +47,22 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                FilledButton.icon(
-                  onPressed: () => context.go(AppRoutes.browseStaff),
-                  icon: const Icon(Icons.search),
-                  label: const Text('Browse Staff'),
+                HoverCard(
+                  padding: EdgeInsets.zero,
+                  child: FilledButton.icon(
+                    onPressed: () => context.go(AppRoutes.browseStaff),
+                    icon: const Icon(Icons.search),
+                    label: const Text('Browse Staff'),
+                  ),
                 ),
                 const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: () => context.go(AppRoutes.login),
-                  icon: const Icon(Icons.login),
-                  label: const Text('Staff Login'),
+                HoverCard(
+                  padding: EdgeInsets.zero,
+                  child: OutlinedButton.icon(
+                    onPressed: () => context.go(AppRoutes.login),
+                    icon: const Icon(Icons.login),
+                    label: const Text('Staff Login'),
+                  ),
                 ),
               ],
             );
@@ -82,13 +90,11 @@ class HomeScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 1000),
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Card(
+                  child: HoverCard(
                     elevation: 0,
                     color: colorScheme.surfaceContainerLow,
-                    child: Padding(
-                      padding: const EdgeInsets.all(28),
-                      child: content,
-                    ),
+                    padding: const EdgeInsets.all(28),
+                    child: content,
                   ),
                 ),
               ),
