@@ -8,6 +8,7 @@ import '../screens/edit_project_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/not_found_screen.dart';
+import '../screens/signup_screen.dart';
 import '../screens/staff_dashboard_screen.dart';
 import '../screens/staff_details_screen.dart';
 import 'app_routes.dart';
@@ -68,6 +69,12 @@ final GoRouter appRouter = GoRouter(
       name: 'login',
       builder: (BuildContext context, GoRouterState state) =>
           const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.signup,
+      name: 'signup',
+      builder: (BuildContext context, GoRouterState state) =>
+          const SignupScreen(),
     ),
   ],
   errorBuilder: (BuildContext context, GoRouterState state) =>

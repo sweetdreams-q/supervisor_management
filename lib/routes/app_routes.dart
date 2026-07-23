@@ -4,6 +4,7 @@ class AppRoutes {
   static const String staffDetails = '/staff/:id';
   static const String staffDashboard = '/staff-dashboard';
   static const String login = '/login';
+  static const String signup = '/signup';
   static const String editInterest = '/staff/interest/edit/:id';
   static const String addProjectIdea = '/staff/project/add';
   static const String editProject = '/staff/project/edit/:id';
