@@ -132,7 +132,10 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 items: interestProvider.interests,
                 itemBuilder: (context, item) => _InterestRecordCard(
                   item: item,
-                  onEdit: () => _showInterestDialog(context, staffId, interest: item),
+                  onEdit: () => context.pushNamed(
+                    'edit-interest',
+                    pathParameters: {'id': item.id},
+                  ),
                   onDelete: () => _confirmDelete(context, 'Delete this interest?', () => interestProvider.deleteInterest(item.id)),
                 ),
               );
@@ -227,7 +230,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) {
+      builder: (sheetContext) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -236,7 +239,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 leading: const Icon(Icons.lightbulb_outline),
                 title: const Text('Add Interest'),
                 onTap: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(sheetContext).pop();
                   _showInterestDialog(context, staffId);
                 },
               ),
@@ -244,8 +247,10 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 leading: const Icon(Icons.folder_open_outlined),
                 title: const Text('Add Project Idea'),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  _showProjectDialog(context, staffId);
+                  Navigator.of(sheetContext).pop();
+                  if (mounted) {
+                    context.pushNamed('add-project-idea');
+                  }
                 },
               ),
             ],
@@ -301,24 +306,43 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 }
 
                 final provider = context.read<InterestProvider>();
+                final messenger = ScaffoldMessenger.of(context);
+                final isAdding = interest == null;
+
                 if (interest == null) {
-                  await provider.addInterest(
+                  final createdInterest = await provider.addInterest(
                     staffId: staffId,
                     title: titleController.text,
                     description: descriptionController.text,
                   );
+
+                  if (createdInterest == null) {
+                    return;
+                  }
                 } else {
-                  await provider.updateInterest(
+                  final updatedInterest = await provider.updateInterest(
                     id: interest.id,
                     staffId: staffId,
                     title: titleController.text,
                     description: descriptionController.text,
                   );
+
+                  if (updatedInterest == null) {
+                    return;
+                  }
                 }
+
+                await provider.loadData(staffId: staffId);
 
                 if (dialogContext.mounted) {
                   Navigator.of(dialogContext).pop();
                 }
+
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(isAdding ? 'Interest added successfully.' : 'Interest updated successfully.'),
+                  ),
+                );
               },
               child: const Text('Save'),
             ),

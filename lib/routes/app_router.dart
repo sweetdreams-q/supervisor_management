@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../screens/browse_staff_screen.dart';
+import '../screens/add_project_idea_screen.dart';
+import '../screens/edit_interest_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/not_found_screen.dart';
@@ -37,6 +39,20 @@ final GoRouter appRouter = GoRouter(
       name: 'staff-dashboard',
       builder: (BuildContext context, GoRouterState state) =>
           const StaffDashboardScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.editInterest,
+      name: 'edit-interest',
+      builder: (BuildContext context, GoRouterState state) {
+        final interestId = state.pathParameters['id'] ?? '';
+        return EditInterestScreen(interestId: interestId);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.addProjectIdea,
+      name: 'add-project-idea',
+      builder: (BuildContext context, GoRouterState state) =>
+          const AddProjectIdeaScreen(),
     ),
     GoRoute(
       path: AppRoutes.login,
