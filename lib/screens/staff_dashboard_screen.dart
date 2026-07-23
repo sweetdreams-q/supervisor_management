@@ -136,7 +136,15 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                     'edit-interest',
                     pathParameters: {'id': item.id},
                   ),
-                  onDelete: () => _confirmDelete(context, 'Delete this interest?', () => interestProvider.deleteInterest(item.id)),
+                  onDelete: () => _confirmDelete(
+                    context,
+                    title: 'Delete Interest',
+                    message: 'Are you sure you want to delete this interest?',
+                    onConfirm: () async {
+                      await interestProvider.deleteInterest(item.id);
+                      await interestProvider.loadData(staffId: staffId);
+                    },
+                  ),
                 ),
               );
 
@@ -150,7 +158,15 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                     'edit-project',
                     pathParameters: {'id': item.id},
                   ),
-                  onDelete: () => _confirmDelete(context, 'Delete this project idea?', () => projectProvider.deleteProject(item.id)),
+                  onDelete: () => _confirmDelete(
+                    context,
+                    title: 'Delete Project Idea',
+                    message: 'Are you sure you want to delete this project idea?',
+                    onConfirm: () async {
+                      await projectProvider.deleteProject(item.id);
+                      await projectProvider.loadData(staffId: staffId);
+                    },
+                  ),
                 ),
               );
 
@@ -205,19 +221,24 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, String message, Future<void> Function() onConfirm) async {
+  Future<void> _confirmDelete(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required Future<void> Function() onConfirm,
+  }) async {
     final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm delete'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('Delete'),
           ),
         ],
@@ -355,11 +376,6 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
     );
   }
 
-  Future<void> _showProjectDialog(
-    BuildContext context,
-    String staffId, {
-    ProjectIdeaModel? project,
-  }) async {}
 }
 
 class _ManagementSection<T> extends StatelessWidget {
