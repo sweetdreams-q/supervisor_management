@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const staffRoutes = require('./routes/staffRoutes');
 const interestRoutes = require('./routes/interestRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 
 const app = express();
 
@@ -10,5 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/staff', staffRoutes);
 app.use('/staff', interestRoutes);
+app.use('/staff', projectRoutes);
 
 module.exports = app;
